@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -29,7 +30,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int counter = 0;
-  int items = 10;
 
   @override
   Widget build(BuildContext context) {
@@ -41,14 +41,8 @@ class _HomePageState extends State<HomePage> {
             children: [
               Text('$counter', style: TextStyle(fontSize: 20)),
               SizedBox(height: 16),
-              Wrap(
-                children: Iterable.generate(items)
-                    .map((e) => ExpensiveItem(
-                          position: e + 1,
-                          counter: counter,
-                        ))
-                    .toList(),
-              )
+              Provider<int>.value(
+                  value: counter, builder: (_, __) => const ExpensiveItemList())
             ],
           ),
         ),
@@ -65,17 +59,35 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+class ExpensiveItemList extends StatelessWidget {
+  final items = 10;
+
+  const ExpensiveItemList();
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      children: Iterable.generate(items)
+          .map((e) => ExpensiveItem(
+                position: e + 1,
+              ))
+          .toList(),
+    );
+  }
+}
+
 class ExpensiveItem extends StatelessWidget {
   final int position;
-  final int counter;
 
-  const ExpensiveItem({Key key, this.position, this.counter}) : super(key: key);
+  const ExpensiveItem({Key key, this.position}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final size = (MediaQuery.of(context).size.width / 5) - 32 / 5;
+    final isFactor =
+        context.select<int, bool>((value) => position % value == 0);
     return FutureBuilder(
-      future: Future.delayed(Duration(seconds: 5)),
+      future: Future.delayed(Duration(seconds: 1)),
       builder: (_, snapshot) {
         return Container(
           height: size,
@@ -83,7 +95,7 @@ class ExpensiveItem extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border.all(color: Colors.black),
             color: snapshot.connectionState == ConnectionState.done
-                ? position % counter == 0
+                ? isFactor
                     ? Color((math.Random().nextDouble() * 0xFFFFFF).toInt())
                         .withOpacity(1.0)
                     : null
