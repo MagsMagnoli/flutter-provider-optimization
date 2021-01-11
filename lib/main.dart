@@ -34,22 +34,24 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Text('$counter', style: TextStyle(fontSize: 20)),
-              SizedBox(height: 16),
-              Wrap(
-                children: Iterable.generate(items)
-                    .map((e) => ExpensiveItem(
-                          position: e + 1,
-                          counter: counter,
-                        ))
-                    .toList(),
-              )
-            ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Text('$counter', style: TextStyle(fontSize: 20)),
+                SizedBox(height: 16),
+                Wrap(
+                  children: Iterable.generate(items)
+                      .map((e) => ExpensiveItem(
+                            position: e + 1,
+                            counter: counter,
+                          ))
+                      .toList(),
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -75,19 +77,20 @@ class ExpensiveItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = (MediaQuery.of(context).size.width / 5) - 32 / 5;
     return FutureBuilder(
-      future: Future.delayed(Duration(seconds: 5)),
+      future: Future.delayed(Duration(seconds: 1)),
       builder: (_, snapshot) {
         return Container(
           height: size,
           width: size,
           decoration: BoxDecoration(
             border: Border.all(color: Colors.black),
-            color: snapshot.connectionState == ConnectionState.done
-                ? position % counter == 0
-                    ? Color((math.Random().nextDouble() * 0xFFFFFF).toInt())
-                        .withOpacity(1.0)
-                    : null
-                : null,
+            color:
+                snapshot.connectionState == ConnectionState.done && counter > 0
+                    ? position % counter == 0
+                        ? Color((math.Random().nextDouble() * 0xFFFFFF).toInt())
+                            .withOpacity(1.0)
+                        : null
+                    : null,
           ),
           child: Center(
             child: snapshot.connectionState == ConnectionState.done
