@@ -34,16 +34,19 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Text('$counter', style: TextStyle(fontSize: 20)),
-              SizedBox(height: 16),
-              Provider<int>.value(
-                  value: counter, builder: (_, __) => const ExpensiveItemList())
-            ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Text('$counter', style: TextStyle(fontSize: 20)),
+                SizedBox(height: 16),
+                Provider<int>.value(
+                    value: counter,
+                    builder: (_, __) => const ExpensiveItemList())
+              ],
+            ),
           ),
         ),
       ),
@@ -84,8 +87,8 @@ class ExpensiveItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = (MediaQuery.of(context).size.width / 5) - 32 / 5;
-    final isFactor =
-        context.select<int, bool>((value) => position % value == 0);
+    final isFactor = context
+        .select<int, bool>((value) => value > 0 && position % value == 0);
     return FutureBuilder(
       future: Future.delayed(Duration(seconds: 1)),
       builder: (_, snapshot) {
